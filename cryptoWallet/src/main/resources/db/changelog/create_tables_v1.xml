@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+
+    <changeSet id="1" author="liquibase">
+        <createTable tableName="user">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="login" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="2" author="liquibase">
+        <createTable tableName="userdata">
+            <column name="user_id" type="INT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="firstName" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastName" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="VARCHAR(20)"/>
+            <column name="email" type="VARCHAR(100)">
+                <constraints unique="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="userdata_ibfk_1"
+                                 baseTableName="userdata"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+
+    <changeSet id="3" author="liquibase">
+        <createTable tableName="role">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="roleName" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="4" author="liquibase">
+        <createTable tableName="userrole">
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="user_id, role_id" tableName="userrole"/>
+        <addForeignKeyConstraint constraintName="userrole_ibfk_1"
+                                 baseTableName="userrole"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="userrole_ibfk_2"
+                                 baseTableName="userrole"
+                                 baseColumnNames="role_id"
+                                 referencedTableName="role"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+
+    <changeSet id="5" author="liquibase">
+        <createTable tableName="currency">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="currencyName" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="symbol" type="VARCHAR(5)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="6" author="liquibase">
+        <createTable tableName="wallet">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="walletName" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="wallet_ibfk_1"
+                                 baseTableName="wallet"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+
+    <changeSet id="7" author="liquibase">
+        <createTable tableName="walletaddress">
+            <column name="wallet_id" type="INT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="address" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="walletaddress_ibfk_1"
+                                 baseTableName="walletaddress"
+                                 baseColumnNames="wallet_id"
+                                 referencedTableName="wallet"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+
+    <changeSet id="8" author="liquibase">
+        <createTable tableName="walletbalance">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="wallet_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balance" type="DECIMAL(18,8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL(18,8)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="walletbalance_ibfk_1"
+                                 baseTableName="walletbalance"
+                                 baseColumnNames="wallet_id"
+                                 referencedTableName="wallet"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="walletbalance_ibfk_2"
+                                 baseTableName="walletbalance"
+                                 baseColumnNames="currency_id"
+                                 referencedTableName="currency"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+
+    <changeSet id="9" author="liquibase">
+        <createTable tableName="transaction">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="walletBalance_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transactionType" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="createAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="transaction_ibfk_1"
+                                 baseTableName="transaction"
+                                 baseColumnNames="walletBalance_id"
+                                 referencedTableName="walletbalance"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+
+    <changeSet id="10" author="liquibase">
+        <createTable tableName="transactiondetail">
+            <column name="transaction_id" type="INT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="fromAddress" type="VARCHAR(255)"/>
+            <column name="toAddress" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fee" type="DECIMAL(18,8)"/>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="transactiondetail_ibfk_1"
+                                 baseTableName="transactiondetail"
+                                 baseColumnNames="transaction_id"
+                                 referencedTableName="transaction"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+
+    <changeSet id="11" author="liquibase">
+        <createTable tableName="stacking">
+            <column name="walletBalance_id" type="INT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="gett" type="DECIMAL(18,8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="createAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiryAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="stacking_ibfk_1"
+                                 baseTableName="stacking"
+                                 baseColumnNames="walletBalance_id"
+                                 referencedTableName="walletbalance"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+
+    <changeSet id="12" author="liquibase">
+        <createTable tableName="emailverification">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verificationCode" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expiryAt" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="emailverification_ibfk_1"
+                                 baseTableName="emailverification"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="13" author="liquibase">
+        <createTable tableName="securityquestion">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="question" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="answer" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="securityquestion_ibfk_1"
+                                 baseTableName="securityquestion"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+
+    <changeSet id="14" author="liquibase">
+        <createTable tableName="kyc">
+            <column name="user_id" type="INT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="documentType" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="documentPicture" type="BLOB"/>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="kyc_ibfk_1"
+                                 baseTableName="kyc"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

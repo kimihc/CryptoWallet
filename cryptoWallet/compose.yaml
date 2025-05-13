@@ -1,0 +1,10 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    container_name: mysql-1
+    environment:
+      - 'MYSQL_DATABASE=cryptoWallet'
+      - 'MYSQL_ROOT_PASSWORD=root'
+      - 'MYSQL_PASSWORD=root'
+    ports:
+      - '3307:3306'
